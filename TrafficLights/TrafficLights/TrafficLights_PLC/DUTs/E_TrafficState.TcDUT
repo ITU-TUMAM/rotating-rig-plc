@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="E_TrafficState" Id="{9a9bb3a3-8e81-4d1d-9980-9e7681432545}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+TYPE E_TrafficState :
+(
+    STATE_RED       := 0,
+    STATE_RED_AMBER := 1,
+    STATE_GREEN     := 2,
+    STATE_AMBER     := 3
+);
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{1ace0009-57fa-4ac4-af48-e450e833f298}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+    (* State machine *)
+    eState          : E_TrafficState := E_TrafficState.STATE_RED;
+
+    (* TwinCAT timer *)
+    tonTimer        : TON;
+    tDuration       : TIME := T#5S;   (* current phase duration *)
+
+    (* Light outputs — wire these to real I/O or watch in simulation *)
+    bRed            : BOOL;
+    bAmber          : BOOL;
+    bGreen          : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* ── Run the timer ────────────────────────────────────────── *)
+tonTimer(IN := NOT tonTimer.Q, PT := tDuration);
+
+(* ── State machine ───────────────────────────────────────── *)
+IF tonTimer.Q THEN
+
+    CASE eState OF
+
+        E_TrafficState.STATE_RED:
+            eState    := E_TrafficState.STATE_RED_AMBER;
+            tDuration := T#2S;
+
+        E_TrafficState.STATE_RED_AMBER:
+            eState    := E_TrafficState.STATE_GREEN;
+            tDuration := T#5S;
+
+        E_TrafficState.STATE_GREEN:
+            eState    := E_TrafficState.STATE_AMBER;
+            tDuration := T#2S;
+
+        E_TrafficState.STATE_AMBER:
+            eState    := E_TrafficState.STATE_RED;
+            tDuration := T#5S;
+
+    END_CASE
+
+END_IF
+
+(* ── Set outputs based on current state ─────────────────── *)
+bRed   := (eState = E_TrafficState.STATE_RED)
+       OR (eState = E_TrafficState.STATE_RED_AMBER);
+
+bAmber := (eState = E_TrafficState.STATE_RED_AMBER)
+       OR (eState = E_TrafficState.STATE_AMBER);
+
+bGreen := (eState = E_TrafficState.STATE_GREEN);]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="18" Count="34" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
